@@ -1,0 +1,23 @@
+---
+- name: remove MariaDB
+  become: yes
+  yum:
+    name: mariadb*
+    state: absent
+
+- name: remove mysqlserver
+  become: yes
+  yum:
+    name: mysql-server
+    state: absent
+
+- name: check mysql installed
+  stat:
+    path: /usr/lib/systemd/system/mysqld.service
+  register: mysql_installed
+
+- name: install mysql
+  become_user: ec2-user
+  shell: bash -lc "curl -fsSL https://raw.githubusercontent.com/MasatoshiMizumoto/raisetech_documents/main/aws/scripts/mysql_amazon_linux_2.sh | sh"
+  when: not mysql_installed.stat.exists
+

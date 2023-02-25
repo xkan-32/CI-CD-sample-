@@ -1,0 +1,94 @@
+---
+- name: update yum
+  become: yes
+  yum:
+    name: "*"
+    state: latest
+
+- name: package install yum
+  become: yes
+  yum:
+    name: "{{ item  }}"
+    state: present  
+  with_items:
+    - gcc-c++
+    - glibc-headers
+    - openssl-devel
+    - readline
+    - libyaml-devel
+    - readline-devel
+    - zlib
+    - zlib-devel
+    - libffi-devel
+    - libxml2
+    - libxslt
+    - libxml2-devel
+    - libxslt-devel
+    - sqlite-devel
+
+- name: install rbenv
+  become: yes
+  git: 
+    repo: https://github.com/sstephenson/rbenv.git 
+    dest: /home/ec2-user/.rbenv
+
+- name: edit permission rbenv
+  become: yes
+  file:
+    path: /home/ec2-user/.rbenv
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+
+- name: edit bashrc
+  template:
+    src: /etc/ansible/roles/rails/templates/rbenv_system.sh.j2
+    dest: /home/ec2-user/.bash_profile
+    owner: ec2-user
+    group: ec2-user
+
+- name: reload rbenv setting
+  shell: bash -lc "source ~/.bash_profile"
+
+- name: install ruby-build
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: /home/ec2-user/.rbenv/plugins/ruby-build
+
+- name: check ruby installed
+  stat:
+    path: /home/ec2-user/.rbenv/shims/ruby
+  register: ruby_installed
+     
+- name: install ruby
+  become_user: ec2-user
+  shell: bash -lc "rbenv install {{ ruby_version }}"
+  when: not ruby_installed.stat.exists
+
+- name: set default ruby version
+  become_user: ec2-user
+  shell: bash -lc "rbenv global {{ ruby_version }} && rbenv rehash"
+
+- name: gem update
+  become_user: ec2-user
+  shell: bash -lc "gem update --system"  
+    
+- name: install bundler 
+  become_user: ec2-user
+  shell: bash -lc "gem install bundler"
+
+- name: update hosts rubygems
+  become: yes
+  lineinfile: 
+    path: /etc/hosts
+    line: "{{ item }}"
+  with_items:
+    - '151.101.193.227 rubygems.org'
+    - '151.101.1.227   rubygems.org'
+    - '151.101.65.227  rubygems.org'
+    - '151.101.129.227 rubygems.org'
+
+- name: install rails
+  become_user: ec2-user
+  shell: bash -lc "gem install rails -v  {{ rails_version }}"
+

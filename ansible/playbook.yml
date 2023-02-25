@@ -1,0 +1,11 @@
+---
+- hosts: appec2
+  become: yes
+  vars_files: vars.yml
+  roles:
+    - git
+    - rails
+    - nodejs
+    - mysql
+    - app
+
