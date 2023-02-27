@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   python: circleci/python@2.0.3
+  aws-cli: circleci/aws-cli@3.1.4
 jobs:
   cfn-lint:
     executor: python/default
@@ -10,7 +11,25 @@ jobs:
       - run:
           name: run cfn-lint
           command: |
-            cfn-lint -i W3002 -t cfn_temp/*.yml
+            cfn-lint -i W3002 -t cloudformation/*.yml
+  aws-cli-example:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_DEFAULT_REGION
+      - run:
+          name: setup environment
+          command: |
+            aws cloudformation deploy --template-file cloudformation/vpc_subnet_routetable_igw.yml --stack-name stack01-1
+            aws cloudformation deploy --template-file cloudformation/securitygroup.yml --stack-name stack01-2
+            aws cloudformation deploy --template-file cloudformation/ec2_instance.yml --stack-name stack01-3
+            aws cloudformation deploy --template-file cloudformation/rds.yml --stack-name stack01-4
+            aws cloudformation deploy --template-file cloudformation/alb.yml --stack-name stack01-5
+            aws cloudformation deploy --template-file cloudformation/S3.yml --stack-name stack01-6
+
 workflows:
   raisetech:
     jobs:

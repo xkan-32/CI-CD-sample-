@@ -16,7 +16,7 @@
   with_items:
     - 'if [ -f ~/.nvm/nvm.sh ]; then'
     - '      . ~/.nvm/nvm.sh'
-    - 'fi'
+    - 'fi    '
 
 - name: reload nvm setting
   become_user: ec2-user

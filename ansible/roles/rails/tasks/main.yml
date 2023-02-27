@@ -8,7 +8,7 @@
 - name: package install yum
   become: yes
   yum:
-    name: "{{ item  }}"
+    name: "{{ item }}"
     state: present  
   with_items:
     - gcc-c++
@@ -25,6 +25,10 @@
     - libxml2-devel
     - libxslt-devel
     - sqlite-devel
+    - libpng-devel
+    - libjpeg-devel
+    - libtiff-devel
+    - gcc
 
 - name: install rbenv
   become: yes
@@ -42,7 +46,7 @@
 
 - name: edit bashrc
   template:
-    src: /etc/ansible/roles/rails/templates/rbenv_system.sh.j2
+    src: templates/rbenv_system.sh.j2
     dest: /home/ec2-user/.bash_profile
     owner: ec2-user
     group: ec2-user
@@ -69,26 +73,26 @@
   become_user: ec2-user
   shell: bash -lc "rbenv global {{ ruby_version }} && rbenv rehash"
 
-- name: gem update
-  become_user: ec2-user
-  shell: bash -lc "gem update --system"  
+#- name: gem update                以下app/tasks/main.ymlに移動
+#  become_user: ec2-user
+#  shell: bash -lc "gem update --system"  
     
-- name: install bundler 
-  become_user: ec2-user
-  shell: bash -lc "gem install bundler"
+#- name: install bundler 
+#  become_user: ec2-user
+#  shell: bash -lc "gem install bundler"
 
-- name: update hosts rubygems
-  become: yes
-  lineinfile: 
-    path: /etc/hosts
-    line: "{{ item }}"
-  with_items:
-    - '151.101.193.227 rubygems.org'
-    - '151.101.1.227   rubygems.org'
-    - '151.101.65.227  rubygems.org'
-    - '151.101.129.227 rubygems.org'
+#- name: update hosts rubygems　　　IPv4で強制接続時、使用
+#  become: yes
+#  lineinfile: 
+#    path: /etc/hosts
+#    line: "{{ item }}"
+#  with_items:
+#    - '151.101.193.227 rubygems.org'
+#    - '151.101.1.227   rubygems.org'
+#    - '151.101.65.227  rubygems.org'
+#    - '151.101.129.227 rubygems.org'
 
-- name: install rails
-  become_user: ec2-user
-  shell: bash -lc "gem install rails -v  {{ rails_version }}"
+#- name: install rails 　　　　　　　gemfileに記載ありのためスキップ
+#  become_user: ec2-user
+#  shell: bash -lc "gem install rails -v  {{ rails_version }}"
 

@@ -1,6 +1,75 @@
 ---
+- name: check app installed
+  stat: 
+    path: /home/ec2-user/raisetech-live8-sample-app
+  register: app_installed
+
 - name: git clone app
   git:
     repo: https://github.com/yuta-ushijima/raisetech-live8-sample-app.git
     dest: /home/ec2-user/raisetech-live8-sample-app
+  when: not app_installed.stat.exists
 
+- name: edit permission sampleapp
+  file:
+    path: /home/ec2-user/raisetech-live8-sample-app
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    recurse: yes
+
+- name: edit database.yml
+  template: 
+    src: templates/database.yml.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/database.yml
+    owner: ec2-user
+    group: ec2-user  
+
+- name: gem update
+  become_user: ec2-user
+  shell: bash -lc "gem update --system"  
+    
+- name: install bundler 
+  become_user: ec2-user
+  shell: bash -lc "gem install bundler"
+  
+- name: gem install for bundler
+  become_user: ec2-user
+  ansible.builtin.command:
+    cmd: bash -lc "bundle install"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+
+- name: edit credentialfile1
+  template: 
+    src: templates/production.yml.enc.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.yml.enc
+    owner: ec2-user
+    group: ec2-user
+
+- name: edit credentialfile2
+  template: 
+    src: templates/production.yml.enc.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/credentials.yml.enc
+    owner: ec2-user
+    group: ec2-user
+
+- name: edit key1
+  template:
+    src: templates/production.key.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.key
+    owner: ec2-user
+    group: ec2-user
+
+- name: edit key2
+  template:
+    src: templates/production.key.j2
+    dest: /home/ec2-user/raisetech-live8-sample-app/mastar.key
+    owner: ec2-user
+    group: ec2-user
+
+- name: Cache classes change
+  ansible.builtin.replace:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/environments/production.rb
+    regexp: '\bconfig.cache_classes = true\b'
+    replace: 'config.cache_classes = false'
+    

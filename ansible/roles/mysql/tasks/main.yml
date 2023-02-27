@@ -21,3 +21,6 @@
   shell: bash -lc "curl -fsSL https://raw.githubusercontent.com/MasatoshiMizumoto/raisetech_documents/main/aws/scripts/mysql_amazon_linux_2.sh | sh"
   when: not mysql_installed.stat.exists
 
+- name: stop mysql
+  become: yes
+  shell: bash -lc "service mysqld stop"

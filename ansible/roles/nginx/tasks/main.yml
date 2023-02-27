@@ -1,0 +1,29 @@
+---
+- name: install nginx
+  become: yes
+  shell: bash -lc "amazon-linux-extras install -y nginx1"
+
+- name: setting nginx for sampleapp
+  template:
+    src: templates/raisetech-live8-sample-app.conf.j2
+    dest: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
+
+- name: setting nginx 
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+
+- name: edit permission nginx
+  become: yes
+  file:
+    path: /etc/nginx
+    state: directory
+    mode: 755
+
+- name: edit permission /var/lib/nginx
+  become: yes
+  file: 
+    path: /var/lib/nginx
+    state: directory
+    mode: 755
+    
