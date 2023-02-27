@@ -39,31 +39,17 @@
     cmd: bash -lc "bundle install"
     chdir: /home/ec2-user/raisetech-live8-sample-app/
 
-- name: edit credentialfile1
-  template: 
-    src: templates/production.yml.enc.j2
-    dest: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.yml.enc
-    owner: ec2-user
-    group: ec2-user
-
 - name: edit credentialfile2
   template: 
     src: templates/production.yml.enc.j2
-    dest: /home/ec2-user/raisetech-live8-sample-app/credentials.yml.enc
-    owner: ec2-user
-    group: ec2-user
-
-- name: edit key1
-  template:
-    src: templates/production.key.j2
-    dest: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.key
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/credentials.yml.enc
     owner: ec2-user
     group: ec2-user
 
 - name: edit key2
   template:
     src: templates/production.key.j2
-    dest: /home/ec2-user/raisetech-live8-sample-app/mastar.key
+    dest: /home/ec2-user/raisetech-live8-sample-app/config/master.key
     owner: ec2-user
     group: ec2-user
 
