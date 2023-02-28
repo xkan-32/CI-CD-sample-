@@ -25,6 +25,12 @@
     owner: ec2-user
     group: ec2-user  
 
+- name: edit storage.yml
+  lineinfile:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/storage.yml
+    regexp: ' region: ap-northeast-1'
+    line: ' region: {{ s3_region }}'
+
 - name: gem update
   become_user: ec2-user
   shell: bash -lc "gem update --system"  
@@ -53,9 +59,86 @@
     owner: ec2-user
     group: ec2-user
 
-- name: Cache classes change
+- name: cache classes change
   ansible.builtin.replace:
     path: /home/ec2-user/raisetech-live8-sample-app/config/environments/production.rb
     regexp: '\bconfig.cache_classes = true\b'
     replace: 'config.cache_classes = false'
-    
+
+- name: check existence production.yml.enc
+  stat: 
+    path: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.yml.enc
+  register: existing_productionymlenc
+
+- name: rm production.yml.enc
+  file:
+    path: /home/ec2-user/raisetech-live8-sample-app/config/credentials/production.yml.enc
+    state: absent
+  when: existing_productionymlenc.stat.exists
+
+- name: setting database
+  become_user: ec2-user
+  block:
+  - name: create database
+    ansible.builtin.command:
+      cmd: bash -lc "bundle exec rails db:create RAILS_ENV=production"
+      chdir: /home/ec2-user/raisetech-live8-sample-app/
+    ignore_errors: yes
+  - name: migrate database
+    ansible.builtin.command:
+      cmd: bash -lc "bundle exec rails db:migrate RAILS_ENV=production"
+      chdir: /home/ec2-user/raisetech-live8-sample-app/
+    ignore_errors: yes
+
+- name: assets precompile
+  become_user: ec2-user
+  ansible.builtin.command:
+    cmd: bash -lc "bundle exec rails assets:precompile RAILS_ENV=production"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+
+- name: check installed imagemagic
+  stat:
+    path: /home/ec2-user/ImageMagick-{{ imagemagic_ver }}
+  register: installed_imagemagic
+
+- name: setting imagemagic
+  block:
+  - name: DL imagemagic
+    become: yes
+    get_url:
+      url: http://www.imagemagick.org/download/ImageMagick.tar.gz
+      dest: /home/ec2-user/
+    when: not installed_imagemagic.stat.exists
+  - name: decompression imagemagic
+    become_user: ec2-user
+    ansible.builtin.command:
+      cmd: bash -lc "tar -vxf ImageMagick.tar.gz"
+      chdir: /home/ec2-user/
+    when: not installed_imagemagic.stat.exists
+  - name: do script
+    become_user: ec2-user
+    ansible.builtin.command:
+      cmd: bash -lc "./configure"
+      chdir: /home/ec2-user/ImageMagick-{{ imagemagic_ver }}
+  - name: make imagemagic
+    become_user: ec2-user
+    ansible.builtin.command:
+      cmd: bash -lc "make"
+      chdir: /home/ec2-user/ImageMagick-{{ imagemagic_ver }}
+  - name: install imagemagic
+    become: yes
+    ansible.builtin.command:
+      cmd: bash -lc "make install"
+      chdir: /home/ec2-user/ImageMagick-{{ imagemagic_ver }}
+  
+- name: start nginx
+  become: yes
+  ansible.builtin.command:
+    cmd: bash -lc "systemctl start nginx.service"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+
+- name: start unicorn
+  become_user: ec2-user
+  ansible.builtin.command:
+    cmd: bash -lc "bundle exec unicorn -c config/unicorn.rb -E production -D"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/    

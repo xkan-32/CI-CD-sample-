@@ -7,6 +7,6 @@
     - rails
     - nodejs
     - mysql
-    - app
     - nginx
+    - app
 

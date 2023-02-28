@@ -29,6 +29,7 @@ jobs:
             aws cloudformation deploy --template-file cloudformation/rds.yml --stack-name stack01-4
             aws cloudformation deploy --template-file cloudformation/alb.yml --stack-name stack01-5
             aws cloudformation deploy --template-file cloudformation/S3.yml --stack-name stack01-6
+  
 
 workflows:
   raisetech:
