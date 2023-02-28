@@ -24,20 +24,20 @@ Parameters:
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
 Resources:
-  NewKeypair:                   # キーペアの設定
-    Type: AWS::EC2::KeyPair
-    Properties:
-      KeyName: !Sub KeyPair-${AWS::StackName}
-      Tags:
-        - Key: Name
-          Value: !Sub NewKeypair-${NameBase}
+#  NewKeypair:                   # キーペアの設定
+#    Type: AWS::EC2::KeyPair
+#    Properties:
+#      KeyName: !Sub KeyPair-${AWS::StackName}
+#      Tags:
+#        - Key: Name
+#          Value: !Sub NewKeypair-${NameBase}
 
   TeradaEC2Instance:              # インスタンスの設定
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Sub ${LatestAmiId}
       InstanceType: !Sub ${InstanceType}
-      KeyName: !Sub ${NewKeypair}
+      KeyName: ec2node
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -58,6 +58,14 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub TeradaEC2Instance-${NameBase}
+
+  TeradaEIP:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref TeradaEC2Instance
+      AllocationId: eipalloc-0eaab9dffb92765cc
+      EIP: 3.230.175.24
+
 
 Outputs:
   EC2Instanceoutputs:

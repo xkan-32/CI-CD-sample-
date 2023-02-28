@@ -23,15 +23,33 @@ jobs:
       - run:
           name: setup environment
           command: |
+            set -x
             aws cloudformation deploy --template-file cloudformation/vpc_subnet_routetable_igw.yml --stack-name stack01-1
             aws cloudformation deploy --template-file cloudformation/securitygroup.yml --stack-name stack01-2
             aws cloudformation deploy --template-file cloudformation/ec2_instance.yml --stack-name stack01-3
             aws cloudformation deploy --template-file cloudformation/rds.yml --stack-name stack01-4
             aws cloudformation deploy --template-file cloudformation/alb.yml --stack-name stack01-5
             aws cloudformation deploy --template-file cloudformation/S3.yml --stack-name stack01-6
-  
+  executeAnsible:
+    executor: ansible-playbook/default
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - 36:1b:49:ed:f0:bc:40:a9:92:2e:2c:71:10:4d:0c:e3
+      - ansible-playbook/install:
+          version: '2.10.7'
+      - ansible-playbook/playbook:
+          playbook: ansible/playbook.yml
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa'  
 
 workflows:
-  raisetech:
+  deploydemo:
     jobs:
       - cfn-lint
+      - aws-cli-example:
+          requires:
+            - cfn-lint
+      - executeAnsible:
+          requires:
+            - aws-cli-example
