@@ -12,7 +12,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccelerateConfiguration: 
-        AccelerationStatus: Enabled
+        AccelerationStatus: Suspended
       AccessControl: Private
       BucketName: !Sub s3contentsbucket-${NameBase}
       BucketEncryption:
@@ -20,5 +20,5 @@ Resources:
           - ServerSideEncryptionByDefault: 
               SSEAlgorithm: AES256 
       VersioningConfiguration:
-        Status: Enabled
+        Status: Suspended
       
