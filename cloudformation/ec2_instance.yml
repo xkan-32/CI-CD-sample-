@@ -37,7 +37,7 @@ Resources:
     Properties:
       ImageId: !Sub ${LatestAmiId}
       InstanceType: !Sub ${InstanceType}
-      KeyName: ec2node
+      KeyName: dep_sample
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
