@@ -32,6 +32,15 @@ jobs:
             aws cloudformation deploy --template-file cloudformation/rds.yml --stack-name stack01-4
             aws cloudformation deploy --template-file cloudformation/alb.yml --stack-name stack01-5
             aws cloudformation deploy --template-file cloudformation/S3.yml --stack-name stack01-6
+      - run:
+          name: get RDS endpoint
+          command: |
+            RDS_ENDPOINT=$(aws rds describe-db-instances \
+              --db-instance-identifier dbinstance-sample01 \
+              --query "DBInstances[*].Endpoint.Address" \
+              --output text)
+            echo "RDS endpoint: ${RDS_ENDPOINT}"
+            echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
   executeAnsible:
     executor: ansible-playbook/default
     steps:
