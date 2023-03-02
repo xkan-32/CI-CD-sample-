@@ -30,7 +30,7 @@
   lineinfile:
     path: /home/ec2-user/raisetech-live8-sample-app/config/database.yml
     regexp: '  host:'
-    line: '  host:"{{ RDS_ENDPOINT }}"'
+    line: '  host:{{ RDS_ENDPOINT }}'
 
 - name: edit storage.yml
   lineinfile:
