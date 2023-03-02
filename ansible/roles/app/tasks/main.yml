@@ -29,7 +29,7 @@
   become_user: ec2-user
   lineinfile:
     path: /home/ec2-user/raisetech-live8-sample-app/config/database.yml
-    regexp: '  host: <%= Rails.application.credentials.dig(:db, :host) %>'
+    regexp: '  host:'
     line: '  host:"{{ RDS_ENDPOINT }}"'
 
 - name: edit storage.yml
