@@ -4,6 +4,7 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.4
   ansible-playbook: orbss/ansible-playbook@0.0.5
   ruby: circleci/ruby@2.0.0
+  circleci-cli: circleci/circleci-cli@0.1.9
 jobs:
   cfn-lint:
     executor: python/default
@@ -42,6 +43,7 @@ jobs:
             echo "RDS endpoint: ${RDS_ENDPOINT}"
             echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
   check-bash:
+    executor: cli/default
     steps:
       - run:
           name: Show BASH_ENV
