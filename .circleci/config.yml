@@ -71,6 +71,8 @@ jobs:
       - checkout
       - ruby/install:
           version: '3.1.2'
+      - ruby/install-deps: 
+          app-dir: serverspec
       - attach_workspace:
           at: /tmp/workspace
       - run: cat /tmp/workspace/alb-dns.txt
