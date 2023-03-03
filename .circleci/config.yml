@@ -75,7 +75,7 @@ jobs:
           at: /tmp/workspace
       - run: cat /tmp/workspace/alb-dns.txt
       - run: export ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)
-      - run:
+      - run: 
           name: sarverspec
           command: |
             cd serverspec
