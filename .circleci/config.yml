@@ -41,6 +41,7 @@ jobs:
               --db-instance-identifier dbinstance-sample01 \
               --query "DBInstances[*].Endpoint.Address" \
               --output text > /tmp/workspace/rds-endpoint.txt)
+            cat /tmp/workspace/rds-endpoint.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
@@ -51,6 +52,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp/workspace
+      - run: cat /tmp/workspace/rds-endpoint.txt
       - run: export RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
       - add_ssh_keys:
           fingerprints:
