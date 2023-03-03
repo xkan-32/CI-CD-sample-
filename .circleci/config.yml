@@ -40,6 +40,8 @@ jobs:
               --db-instance-identifier dbinstance-sample01 \
               --query "DBInstances[*].Endpoint.Address" \
               --output text > rds-endpoint.txt)
+      - store_artifacts:
+          path: rds-endpoint.txt
   check-bash:
     executor: circleci-cli/default
     steps:
@@ -82,6 +84,6 @@ workflows:
       - check-bash:
           requires:
             - aws-cli-example
-      - executeAnsible:
-          requires:
-            - check-bash
+#      - executeAnsible:
+#          requires:
+#            - check-bash
