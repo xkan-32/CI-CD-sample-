@@ -41,13 +41,13 @@ jobs:
               --query "DBInstances[*].Endpoint.Address" \
               --output text)
             echo "RDS endpoint: ${RDS_ENDPOINT}"
-            echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
   check-bash:
     executor: circleci-cli/default
     steps:
       - run:
           name: Show BASH_ENV
           command: |
+            echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
             source ~/.bashrc
             echo "BASH_ENV=${RDS_ENDPOINT}"
   executeAnsible:
