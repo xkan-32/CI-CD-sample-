@@ -59,7 +59,7 @@ jobs:
           at: /tmp/workspace
       - run: cat /tmp/workspace/rds-endpoint.txt
       - run: RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
-      - run: echo "RDS endpoint:${RDS_ENDPOINT}"
+      - run: echo "RDS endpoint: ${RDS_ENDPOINT}"
       - run: echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
