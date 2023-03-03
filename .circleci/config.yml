@@ -50,10 +50,6 @@ jobs:
     executor: ansible-playbook/default
     steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - run: cat /tmp/workspace/rds-endpoint.txt
-      - run: export RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
       - add_ssh_keys:
           fingerprints:
             - 2a:c5:6b:40:59:d0:07:89:47:7d:4b:0c:ff:5b:69:f0
@@ -63,9 +59,10 @@ jobs:
           at: /tmp/workspace
       - run: cat /tmp/workspace/rds-endpoint.txt
       - run: export RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
+      - run: echo "rds_endpoint=${RDS_ENDPOINT}" >> $BASH_ENV
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
-          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "rds_endpoint=$RDS_ENDPOINT"'
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "rds_endpoint=RDS_ENDPOINT"'
   executeServerspec:
     executor: ruby/default
     steps:
