@@ -155,3 +155,4 @@
   ansible.builtin.command:
     cmd: bash -lc "bundle exec unicorn -c config/unicorn.rb -E production -D"
     chdir: /home/ec2-user/raisetech-live8-sample-app/    
+  ignore_errors: yes

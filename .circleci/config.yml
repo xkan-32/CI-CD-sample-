@@ -42,10 +42,12 @@ jobs:
               --query "DBInstances[*].Endpoint.Address" \
               --output text > /tmp/workspace/rds-endpoint.txt)
             cat /tmp/workspace/rds-endpoint.txt
+            aws elbv2 describe-load-balancers --names ALB-sample01 --query "LoadBalancers[].DNSName" --output text> /tmp/workspace/alb-dns.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - rds-endpoint.txt
+            - alb-dns.txt
   executeAnsible:
     executor: ansible-playbook/default
     steps:
@@ -63,16 +65,21 @@ jobs:
           playbook: ansible/playbook.yml
           playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)"'
   executeServerspec:
-    executor: ruby/default
+    docker:
+      - image: 'cimg/base:stable'
     steps:
       - checkout
-      - ruby/install-deps: 
-          app-dir: serverspec
+      - ruby/install:
+          version: '3.1.2'
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat /tmp/workspace/rds-endpoint.txt
+      - run: export ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)
       - run:
           name: sarverspec
           command: |
             cd serverspec
-
+            bundle exec rake spec
       
 workflows:
   deploydemo:
