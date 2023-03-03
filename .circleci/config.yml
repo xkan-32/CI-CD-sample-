@@ -58,11 +58,12 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run: cat /tmp/workspace/rds-endpoint.txt
-      - run: export RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
-      - run: echo "rds_endpoint=${RDS_ENDPOINT}" >> $BASH_ENV
+      - run: RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
+      - run: echo "RDS endpoint:${RDS_ENDPOINT}"
+      - run: echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
-          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "rds_endpoint=RDS_ENDPOINT"'
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY"'
   executeServerspec:
     executor: ruby/default
     steps:
