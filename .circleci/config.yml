@@ -36,28 +36,21 @@ jobs:
       - run:
           name: get RDS endpoint
           command: |
+            mkdir -p /tmp/workspace
             RDS_ENDPOINT=$(aws rds describe-db-instances \
               --db-instance-identifier dbinstance-sample01 \
               --query "DBInstances[*].Endpoint.Address" \
-              --output text > rds-endpoint.txt)
+              --output text > /tmp/workspace/rds-endpoint.txt)
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - rds-endpoint.txt
-  check-bash:
-    executor: circleci-cli/default
-    steps:
-      - run:
-          name: Show BASH_ENV
-          command: |
-            export RDS_ENDPOINT=$(cat rds-endpoint.txt)
-            echo $RDS_ENDPOINT
   executeAnsible:
     executor: ansible-playbook/default
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      - run: export RDS_ENDPOINT=$(cat rds-endpoint.txt)
+      - run: export RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)
       - checkout
       - add_ssh_keys:
           fingerprints:
@@ -86,9 +79,6 @@ workflows:
       - aws-cli-example:
           requires:
             - cfn-lint
-      - check-bash:
-          requires:
-            - aws-cli-example
       - executeAnsible:
           requires:
-            - check-bash
+            - aws-cli-example
