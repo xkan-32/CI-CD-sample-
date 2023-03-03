@@ -71,8 +71,6 @@ jobs:
       - checkout
       - ruby/install:
           version: '3.1.2'
-      - ruby/install-deps: 
-          app-dir: serverspec
       - attach_workspace:
           at: /tmp/workspace
       - run: cat /tmp/workspace/alb-dns.txt
@@ -80,8 +78,13 @@ jobs:
       - run:
           name: sarverspec
           command: |
-            cd serverspec
-            bundle exec rake spec
+            gem install bundler
+            gem install serverspec
+            gem install rake
+            gem install ed25519
+            gem install bcrypt_pbkdf
+            rake spec
+
       
 workflows:
   deploydemo:
