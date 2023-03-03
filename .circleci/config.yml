@@ -48,6 +48,7 @@ jobs:
       - run:
           name: Show BASH_ENV
           command: |
+            source ~/.bashrc
             echo "BASH_ENV=${RDS_ENDPOINT}"
   executeAnsible:
     executor: ansible-playbook/default
