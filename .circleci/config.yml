@@ -91,3 +91,6 @@ workflows:
       - executeAnsible:
           requires:
             - aws-cli-example
+      - executeServerspec:
+          requires:
+            - executeAnsible
