@@ -12,6 +12,6 @@ end
 
 alb_dns=ENV['ALB_DNS']
 
-describe command('curl #{alb_dns}/ -o /dev/null -w "%{http_code}\n" -s') do
+describe command('curl http://#{alb_dns}/ -o /dev/null -w "%{http_code}\n" -s') do
 its(:stdout) { should match /^200$/ }
 end
