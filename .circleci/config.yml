@@ -43,7 +43,7 @@ jobs:
             echo "RDS endpoint: ${RDS_ENDPOINT}"
             echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
   check-bash:
-    executor: cli/default
+    executor: circleci-cli/default
     steps:
       - run:
           name: Show BASH_ENV
