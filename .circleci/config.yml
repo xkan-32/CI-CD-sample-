@@ -39,17 +39,15 @@ jobs:
             RDS_ENDPOINT=$(aws rds describe-db-instances \
               --db-instance-identifier dbinstance-sample01 \
               --query "DBInstances[*].Endpoint.Address" \
-              --output text)
-            echo "RDS endpoint: ${RDS_ENDPOINT}"
+              --output text > rds-endpoint.txt)
   check-bash:
     executor: circleci-cli/default
     steps:
       - run:
           name: Show BASH_ENV
           command: |
-            echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
-            source ~/.bashrc
-            echo "BASH_ENV=${RDS_ENDPOINT}"
+            export RDS_ENDPOINT=$(cat rds-endpoint.txt)
+            echo $RDS_ENDPOINT
   executeAnsible:
     executor: ansible-playbook/default
     steps:
@@ -61,7 +59,7 @@ jobs:
           version: '2.10.7'
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
-          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "rds_endpoint=${RDS_ENDPOINT}"'
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "rds_endpoint=$RDS_ENDPOINT"'
   executeServerspec:
     executor: ruby/default
     steps:
