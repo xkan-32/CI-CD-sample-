@@ -41,6 +41,12 @@ jobs:
               --output text)
             echo "RDS endpoint: ${RDS_ENDPOINT}"
             echo "export RDS_ENDPOINT=${RDS_ENDPOINT}" >> $BASH_ENV
+  check-bash:
+    steps:
+      - run:
+          name: Show BASH_ENV
+          command: |
+            echo "BASH_ENV=$BASH_ENV"
   executeAnsible:
     executor: ansible-playbook/default
     steps:
@@ -72,6 +78,9 @@ workflows:
       - aws-cli-example:
           requires:
             - cfn-lint
-      - executeAnsible:
+      - check-bash:
           requires:
             - aws-cli-example
+      - executeAnsible:
+          requires:
+            - check-bash
