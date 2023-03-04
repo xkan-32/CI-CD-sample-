@@ -18,7 +18,7 @@ http {
     log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
-
+    server_names_hash_bucket_size 128;
     access_log  /var/log/nginx/access.log  main;
 
     sendfile            on;
@@ -41,7 +41,7 @@ http {
         server_name  _;
         root         /usr/share/nginx/html;
 
-        # Load configuration files for the default server block.
+        Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
 
         error_page 404 /404.html;
