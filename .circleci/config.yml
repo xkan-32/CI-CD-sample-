@@ -84,7 +84,7 @@ jobs:
             gem install rake
             gem install ed25519
             gem install bcrypt_pbkdf
-            env ALB_DNS='$(cat /tmp/workspace/alb-dns.txt)' rake spec
+            env ALB_DNS=$(cat /tmp/workspace/alb-dns.txt) rake spec
 
       
 workflows:
