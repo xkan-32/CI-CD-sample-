@@ -13,7 +13,7 @@
   lineinfile: 
     path: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
     regexp: '  server_name localhost;'
-    line:  server_name {{ ALB_DNS }};
+    line: '  server_name {{ ALB_DNS }};'
 
 - name: setting nginx 
   template:
