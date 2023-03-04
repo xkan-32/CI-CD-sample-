@@ -8,10 +8,23 @@
     src: templates/raisetech-live8-sample-app.conf.j2
     dest: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
 
+- name: edit raisetech-live8-sample-app.conf
+  become: yes
+  lineinfile: 
+  path: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
+  regexp: '  server_name localhost;'
+  line:  server_name {{ ALB_DNS }};
+
 - name: setting nginx 
   template:
     src: templates/nginx.conf.j2
     dest: /etc/nginx/nginx.conf
+
+- name: start nginx
+  become: yes
+  ansible.builtin.command:
+    cmd: bash -lc "systemctl start nginx.service"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
 
 - name: edit permission nginx
   become: yes

@@ -147,7 +147,7 @@
 - name: start nginx
   become: yes
   ansible.builtin.command:
-    cmd: bash -lc "systemctl start nginx.service"
+    cmd: bash -lc "systemctl reload nginx.service"
     chdir: /home/ec2-user/raisetech-live8-sample-app/
 
 - name: start unicorn
