@@ -63,7 +63,7 @@ jobs:
       - run: cat /tmp/workspace/alb-dns.txt
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
-          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)" --extra-vars ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)"'
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)" --extra-vars "ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)"'
   executeServerspec:
     docker:
       - image: 'cimg/base:stable'
