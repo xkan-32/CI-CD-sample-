@@ -74,7 +74,6 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run: cat /tmp/workspace/alb-dns.txt
-      - run: export ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)
       - run: 
           name: sarverspec
           command: |
