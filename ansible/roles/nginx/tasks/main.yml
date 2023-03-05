@@ -34,3 +34,11 @@
     state: directory
     mode: 0755
     owner: ec2-user
+
+- name: edit permission /var/lib/nginx
+  become: yes
+  file: 
+    path: /var/lib/nginx/tmp
+    state: directory
+    mode: 0755
+    owner: ec2-user
