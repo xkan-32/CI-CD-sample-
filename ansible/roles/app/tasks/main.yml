@@ -143,7 +143,21 @@
     ansible.builtin.command:
       cmd: bash -lc "make install"
       chdir: /home/ec2-user/ImageMagick-{{ imagemagic_ver }}
-  
+
+- name: start nginx
+  become: yes
+  ansible.builtin.command:
+    cmd: bash -lc "systemctl start nginx.service"
+    chdir: /home/ec2-user/raisetech-live8-sample-app/
+
+- name: edit permission /var/lib/nginx
+  become: yes
+  file: 
+    path: /var/lib/nginx
+    state: directory
+    mode: 0755
+    owner: ec2-user
+
 - name: start nginx
   become: yes
   ansible.builtin.command:
