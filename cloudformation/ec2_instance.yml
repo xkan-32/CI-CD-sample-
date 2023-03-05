@@ -37,7 +37,7 @@ Resources:
     Properties:
       ImageId: !Sub ${LatestAmiId}
       InstanceType: !Sub ${InstanceType}
-      KeyName: ec2node
+      KeyName: dep_sample
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -63,7 +63,6 @@ Resources:
     Type: AWS::EC2::EIPAssociation
     Properties:
       InstanceId: !Ref TeradaEC2Instance
-      AllocationId: eipalloc-0eaab9dffb92765cc
       EIP: 3.230.175.24
 
 

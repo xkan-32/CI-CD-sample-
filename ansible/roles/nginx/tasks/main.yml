@@ -8,6 +8,13 @@
     src: templates/raisetech-live8-sample-app.conf.j2
     dest: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
 
+- name: edit raisetech-live8-sample-app.conf
+  become: yes
+  lineinfile: 
+    path: /etc/nginx/conf.d/raisetech-live8-sample-app.conf
+    regexp: '  server_name localhost;'
+    line: '  server_name {{ ALB_DNS }};'
+
 - name: setting nginx 
   template:
     src: templates/nginx.conf.j2
@@ -18,12 +25,20 @@
   file:
     path: /etc/nginx
     state: directory
-    mode: 755
+    mode: 0755
 
 - name: edit permission /var/lib/nginx
   become: yes
   file: 
     path: /var/lib/nginx
     state: directory
-    mode: 755
-    
+    mode: 0755
+    owner: ec2-user
+
+- name: edit permission /var/lib/nginx
+  become: yes
+  file: 
+    path: /var/lib/nginx/tmp
+    state: directory
+    mode: 0755
+    owner: ec2-user

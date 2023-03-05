@@ -1,8 +1,8 @@
 [appec2]
-10.0.12.210
+3.230.175.24
 
 [appec2:vars]
-ansible_ssh_private_key_file=/home/ec2-user/.ssh/ec2node.pem
+# ansible_ssh_private_key_file=/home/ec2-user/.ssh/ec2node.pem
 # This is the default ansible 'hosts' file.
 #
 # It should live in /etc/ansible/hosts
