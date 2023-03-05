@@ -41,7 +41,7 @@ http {
         server_name  _;
         root         /usr/share/nginx/html;
 
-        Load configuration files for the default server block.
+        # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
 
         error_page 404 /404.html;
