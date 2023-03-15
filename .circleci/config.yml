@@ -3,6 +3,8 @@ orbs:
   python: circleci/python@2.0.3
   aws-cli: circleci/aws-cli@3.1.4
   ansible-playbook: orbss/ansible-playbook@0.0.5
+  ruby: circleci/ruby@2.0.0
+  circleci-cli: circleci/circleci-cli@0.1.9
 jobs:
   cfn-lint:
     executor: python/default
@@ -31,19 +33,59 @@ jobs:
             aws cloudformation deploy --template-file cloudformation/rds.yml --stack-name stack01-4
             aws cloudformation deploy --template-file cloudformation/alb.yml --stack-name stack01-5
             aws cloudformation deploy --template-file cloudformation/S3.yml --stack-name stack01-6
+      - run:
+          name: get RDS endpoint
+          command: |
+            mkdir -p /tmp/workspace
+            RDS_ENDPOINT=$(aws rds describe-db-instances \
+              --db-instance-identifier dbinstance-sample01 \
+              --query "DBInstances[*].Endpoint.Address" \
+              --output text > /tmp/workspace/rds-endpoint.txt)
+            cat /tmp/workspace/rds-endpoint.txt
+            aws elbv2 describe-load-balancers --names ALB-sample01 --query "LoadBalancers[].DNSName" --output text> /tmp/workspace/alb-dns.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - rds-endpoint.txt
+            - alb-dns.txt
   executeAnsible:
     executor: ansible-playbook/default
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - 36:1b:49:ed:f0:bc:40:a9:92:2e:2c:71:10:4d:0c:e3
+            - 2a:c5:6b:40:59:d0:07:89:47:7d:4b:0c:ff:5b:69:f0
       - ansible-playbook/install:
           version: '2.10.7'
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat /tmp/workspace/rds-endpoint.txt
+      - run: cat /tmp/workspace/alb-dns.txt
       - ansible-playbook/playbook:
           playbook: ansible/playbook.yml
-          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa'  
+          playbook-options: '-u ec2-user -i ansible/hosts --private-key ~/.ssh/id_rsa --extra-vars "master_key=$MASTER_KEY" --extra-vars "RDS_ENDPOINT=$(cat /tmp/workspace/rds-endpoint.txt)" --extra-vars "ALB_DNS=$(cat /tmp/workspace/alb-dns.txt)"'
+  executeServerspec:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - ruby/install:
+          version: '3.1.2'
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat /tmp/workspace/alb-dns.txt
+      - run: 
+          name: sarverspec
+          command: |
+            cd serverspec
+            gem install bundler
+            gem install serverspec
+            gem install rake
+            gem install ed25519
+            gem install bcrypt_pbkdf
+            env ALB_DNS=$(cat /tmp/workspace/alb-dns.txt) rake spec
 
+      
 workflows:
   deploydemo:
     jobs:
@@ -54,3 +96,6 @@ workflows:
       - executeAnsible:
           requires:
             - aws-cli-example
+      - executeServerspec:
+          requires:
+            - executeAnsible

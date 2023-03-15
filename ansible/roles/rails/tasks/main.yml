@@ -63,7 +63,7 @@
   stat:
     path: /home/ec2-user/.rbenv/shims/ruby
   register: ruby_installed
-     
+
 - name: install ruby
   become_user: ec2-user
   shell: bash -lc "rbenv install {{ ruby_version }}"
