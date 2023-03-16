@@ -29,10 +29,13 @@ latest
 ```
 17.9.1
 ```
-### ImageMagic
+### ImageMagick
 ```
 latest
 ```
+※ ansible/vars.ymlに最新Ver.指定必須
+
+[ImageMagick公式サイト](https://imagemagick.org/)
 ### Database
 ```
 MySQL
