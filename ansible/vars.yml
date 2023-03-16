@@ -3,4 +3,4 @@ ruby_version: 3.1.2
 rails_version: 7.0.4.2
 nodejs_version: 17.9.1
 s3_region: us-east-1
-imagemagic_ver: 7.1.0-62
+imagemagic_ver: 7.1.1-3
